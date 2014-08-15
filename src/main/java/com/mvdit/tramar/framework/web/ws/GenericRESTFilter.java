@@ -21,14 +21,14 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class GenericRESTFilter extends GenericFilter{
 
     @Override
-    @JsonDeserialize(using= CustomQueryConditionMapDeserializer.class)
-    public void setConditions(Map conditions) {
+    @JsonDeserialize(using= CustomQueryConditionListDeserializer.class)
+    public void setConditions(List conditions) {
         super.setConditions(conditions); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    @JsonSerialize(using= CustomQueryConditionMapSerializer.class)
-    public Map<String, QueryCondition> getConditions() {
+    @JsonSerialize(using= CustomQueryConditionListSerializer.class)
+    public List<QueryCondition> getConditions() {
         return super.getConditions(); //To change body of generated methods, choose Tools | Templates.
     } 
 

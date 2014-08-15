@@ -20,14 +20,14 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class RESTQueryCondition {
 
     private QueryCondition queryCondition;
-
+/*s
     public RESTQueryCondition(String comparator, String operator, String field, String value) {         
         queryCondition= new QueryCondition(QueryConditionComparators.valueOf(comparator), QueryConditionOperators.valueOf(operator), field, value);
     }
 
     public RESTQueryCondition() {
         this(QueryConditionComparators.EQ.toString(), QueryConditionOperators.AND.toString(), "", "");
-    }
+    }*/
 
     @JsonIgnore
     public QueryConditionComparators getComparatorEnum() {
@@ -58,11 +58,11 @@ public class RESTQueryCondition {
     }
 
     public String getValue() {
-        return this.queryCondition.getValue().toString();
+        return this.queryCondition.getSingleValue().toString();
     }
 
     public void setValue(String value) {
-        this.queryCondition.setValue(value);
+        this.queryCondition.setSingleValue(value);
     }
     
      public String getComparator() {
