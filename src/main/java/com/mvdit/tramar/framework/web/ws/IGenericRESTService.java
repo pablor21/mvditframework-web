@@ -25,17 +25,17 @@ public interface IGenericRESTService<T, K, R extends GenericRESTResponse, F exte
     
     /**
      * Crea un nuevo elemento
-     * @param entity
+     * @param source
      * @return El elemento creado
      */
-    R create(T entity);
+    R create(String source);
 
     /**
      * Actualiza un elemento
-     * @param entity
+     * @param source
      * @return El elemento modificado
      */
-    R update(T entity);
+    R update(String source);
 
     /**
      * Elimina un elemento

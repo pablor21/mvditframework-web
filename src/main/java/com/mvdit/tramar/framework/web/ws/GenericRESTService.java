@@ -51,6 +51,11 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
         F restFilter= (F) GenericRESTConverter.fromString(source, filterClass);
         return restFilter;
     }
+    
+    protected T getObjectFromRequest(String source){
+        T obj= (T) GenericRESTConverter.fromString(source, entityClass);
+        return obj;
+    }
 
     protected abstract IGenericCRUDService<T, K> getServiceInstance();
 
@@ -96,10 +101,11 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     @Override
     @Consumes({"application/xml", "application/json"})
     @Produces({"application/xml", "application/json"})
-    public R create(T entity) {
+    public R create(String source) {
         R response = getResponseInstance();
         try {
-            T newEntity = getServiceInstance().create(entity);
+            T sourceEntity= this.getObjectFromRequest(source);
+            T newEntity = getServiceInstance().create(sourceEntity);
             if (newEntity == null) {
                 throw new Exception("No ha sido posible crear " + this.getMensajeSingular());
             }
@@ -118,11 +124,11 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     @Override
     @Consumes({"application/xml", "application/json"})
     @Produces({"application/xml", "application/json"})
-    public R update(T entity) {
+    public R update(String source) {
         R response = getResponseInstance();
         try {
-
-            T newEntity = getServiceInstance().update(entity);
+            T sourceEntity= this.getObjectFromRequest(source);
+            T newEntity = getServiceInstance().update(sourceEntity);
             if (newEntity == null) {
                 throw new Exception("No ha sido posible modificar " + this.getMensajeSingular());
             }
