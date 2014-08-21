@@ -5,6 +5,7 @@
  */
 package com.mvdit.tramar.framework.web.ws;
 
+import com.mvdit.framework.core.MvditValidatorException;
 import com.mvdit.framework.data.GenericFilter;
 import com.mvdit.framework.data.GenericPageResult;
 import com.mvdit.framework.data.IFilter;
@@ -44,22 +45,22 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     public GenericRESTService() {
         this.entityClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.resultClass = (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
-        this.filterClass= (Class<F>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];;
+        this.filterClass = (Class<F>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[3];;
     }
-    
-    protected F getFilterFromString(String source){
-        F restFilter= (F) GenericRESTConverter.fromString(source, filterClass);
+
+    protected F getFilterFromString(String source) {
+        F restFilter = (F) GenericRESTConverter.fromString(source, filterClass);
         return restFilter;
     }
-    
-    protected T getObjectFromRequest(String source){
-        T obj= (T) GenericRESTConverter.fromString(source, entityClass);
+
+    protected T getObjectFromRequest(String source) {
+        T obj = (T) GenericRESTConverter.fromString(source, entityClass);
         return obj;
     }
 
     protected abstract IGenericCRUDService<T, K> getServiceInstance();
 
-    protected abstract R getResponseInstance();   
+    protected abstract R getResponseInstance();
 
     /**
      * El genero del elemento
@@ -89,9 +90,10 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             response.setResponseCode(200);
             response.setType(RESTResultType.SINGLE);
             response.setSingleResult(newEntity);
+
         } catch (Exception ex) {
             response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
+            response.setMessage(ex.getLocalizedMessage());
         }
         return response;
     }
@@ -104,7 +106,7 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     public R create(String source) {
         R response = getResponseInstance();
         try {
-            T sourceEntity= this.getObjectFromRequest(source);
+            T sourceEntity = this.getObjectFromRequest(source);
             T newEntity = getServiceInstance().create(sourceEntity);
             if (newEntity == null) {
                 throw new Exception("No ha sido posible crear " + this.getMensajeSingular());
@@ -113,9 +115,13 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             response.setType(RESTResultType.SINGLE);
             response.setSingleResult(newEntity);
             response.setMessage("Se ha creado correctamente " + this.getMensajeSingular());
+        } catch (MvditValidatorException vex) {
+            response.setResponseCode(400);
+            response.setMessage(vex.getLocalizedMessage());
+            response.setValidatorExceptionsSet(vex.getViolations());
         } catch (Exception ex) {
             response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
+            response.setMessage(ex.getLocalizedMessage());
         }
         return response;
     }
@@ -127,7 +133,7 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     public R update(String source) {
         R response = getResponseInstance();
         try {
-            T sourceEntity= this.getObjectFromRequest(source);
+            T sourceEntity = this.getObjectFromRequest(source);
             T newEntity = getServiceInstance().update(sourceEntity);
             if (newEntity == null) {
                 throw new Exception("No ha sido posible modificar " + this.getMensajeSingular());
@@ -136,9 +142,13 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             response.setType(RESTResultType.SINGLE);
             response.setSingleResult(newEntity);
             response.setMessage("Se ha modificado correctamente " + this.getMensajeSingular());
+        } catch (MvditValidatorException vex) {
+            response.setResponseCode(400);
+            response.setMessage(vex.getLocalizedMessage());
+            response.setValidatorExceptionsSet(vex.getViolations());
         } catch (Exception ex) {
             response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
+            response.setMessage(ex.getLocalizedMessage());
         }
         return response;
     }
@@ -151,7 +161,7 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     public R delete(@PathParam("id") K id) {
         R response = getResponseInstance();
         try {
-            T entity= getServiceInstance().getById(id);
+            T entity = getServiceInstance().getById(id);
             int cantidad = getServiceInstance().delete(entity);
             if (cantidad == 0) {
                 throw new Exception("No ha sido posible eliminar " + this.getMensajeSingular());
@@ -160,32 +170,35 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             response.setType(RESTResultType.SINGLE);
             //response.setSingleResult(1);
             response.setMessage("Se han eliminado correctamente " + cantidad + " " + this.getMensajePlural());
+        } catch (MvditValidatorException vex) {
+            response.setResponseCode(400);
+            response.setMessage(vex.getLocalizedMessage());
+            response.setValidatorExceptionsSet(vex.getViolations());
         } catch (Exception ex) {
             response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
+            response.setMessage(ex.getLocalizedMessage());
         }
         return response;
     }
 
     /*@GET
-    @Consumes({"application/xml", "application/json"})
-    @Produces({"application/xml", "application/json"})
-    @Override
-    public GenericRESTResponse list(@Context UriInfo uriInfo) {
-        GenericRESTResponse response = getResponseInstance();
-        try {
-            GenericRESTFilter filter = (GenericRESTFilter) GenericRESTConverter.fromString(uriInfo.getQueryParameters().getFirst("filter"), GenericRESTFilter.class);
-            IPageResult elements = getServiceInstance().list(filter);
-            response.setResponseCode(200);
-            response.setType(RESTResultType.MULTIPLE);
-            response.setResultList((GenericPageResult) elements);
-        } catch (Exception ex) {
-            response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
-        }
-        return response;
-    }*/
-    
+     @Consumes({"application/xml", "application/json"})
+     @Produces({"application/xml", "application/json"})
+     @Override
+     public GenericRESTResponse list(@Context UriInfo uriInfo) {
+     GenericRESTResponse response = getResponseInstance();
+     try {
+     GenericRESTFilter filter = (GenericRESTFilter) GenericRESTConverter.fromString(uriInfo.getQueryParameters().getFirst("filter"), GenericRESTFilter.class);
+     IPageResult elements = getServiceInstance().list(filter);
+     response.setResponseCode(200);
+     response.setType(RESTResultType.MULTIPLE);
+     response.setResultList((GenericPageResult) elements);
+     } catch (Exception ex) {
+     response.setResponseCode(500);
+     response.setMessage(ex.getLocalizedMessage());
+     }
+     return response;
+     }*/
     @GET
     @Consumes({"application/xml", "application/json"})
     @Produces({"application/xml", "application/json"})
@@ -197,9 +210,10 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             response.setResponseCode(200);
             response.setType(RESTResultType.MULTIPLE);
             response.setResultList((GenericPageResult) elements);
+            
         } catch (Exception ex) {
             response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
+            response.setMessage(ex.getLocalizedMessage());
         }
         return response;
     }
@@ -210,7 +224,7 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
     @Produces({"application/xml", "application/json"})
     @Override
     public R listAll() {
-       R response = getResponseInstance();
+        R response = getResponseInstance();
         try {
             //RESTGenericFilterWrapper filter = RESTGenericFilterWrapper.fromString(uriInfo.getQueryParameters().getFirst("filter"));
             IPageResult elements = getServiceInstance().list(new GenericFilter(1, 0));
@@ -219,7 +233,7 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             response.setResultList((GenericPageResult) elements);
         } catch (Exception ex) {
             response.setResponseCode(500);
-            response.setMessage(ex.getMessage());
+            response.setMessage(ex.getLocalizedMessage());
         }
         return response;
     }

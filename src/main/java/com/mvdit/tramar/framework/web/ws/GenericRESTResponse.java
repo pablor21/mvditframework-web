@@ -7,7 +7,13 @@
 package com.mvdit.tramar.framework.web.ws;
 
 import com.mvdit.framework.data.GenericPageResult;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -21,6 +27,12 @@ public class GenericRESTResponse<T> {
     private String message;
     private T singleResult;
     private GenericPageResult resultList;
+    private Set<ConstraintViolation> validatorExceptionsSet;
+    private Map<String, String> validatorExceptions;
+
+    public GenericRESTResponse() {
+        this.validatorExceptions=null;
+    }
     
     
 
@@ -64,6 +76,31 @@ public class GenericRESTResponse<T> {
         this.resultList = resultList;
     }
 
+    @JsonIgnore
+    public Set<ConstraintViolation> getValidatorExceptionsSet(){
+        return this.validatorExceptionsSet;
+    }
     
+    public void setValidatorExceptionsSet(Set<ConstraintViolation> violations){
+        this.validatorExceptionsSet= violations;
+        for(ConstraintViolation violation:violations){
+            this.addValidatorException(violation.getPropertyPath().toString(), violation.getMessage());
+        }
+    }
     
+    public Map<String, String> getValidatorExceptions(){
+        return this.validatorExceptions;
+    }
+    
+    public void setValidatorExceptions(Map<String,String> exceptions){
+        this.validatorExceptions=exceptions;
+        
+    }
+    
+    public void addValidatorException(String path, String message){
+        if(this.validatorExceptions==null){
+            this.validatorExceptions= new HashMap<>();
+        }
+        this.validatorExceptions.put(path, message);
+    }
 }
