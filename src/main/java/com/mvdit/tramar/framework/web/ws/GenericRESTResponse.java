@@ -6,14 +6,19 @@
 
 package com.mvdit.tramar.framework.web.ws;
 
+import com.mvdit.framework.core.utils.CustomJSONDateTimeDeserializer;
+import com.mvdit.framework.core.utils.CustomJSONDateTimeSerializer;
 import com.mvdit.framework.data.GenericPageResult;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  *
@@ -21,7 +26,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @param <T>
  */
 @XmlRootElement(name = "Response")
-public class GenericRESTResponse<T> {
+public class GenericRESTResponse<T> implements Serializable{
     private int responseCode;
     private RESTResultType type;
     private String message;
@@ -29,10 +34,23 @@ public class GenericRESTResponse<T> {
     private GenericPageResult resultList;
     private Set<ConstraintViolation> validatorExceptionsSet;
     private Map<String, String> validatorExceptions;
+    @JsonDeserialize(using = CustomJSONDateTimeDeserializer.class)
+    @JsonSerialize(using = CustomJSONDateTimeSerializer.class)
+    private Date date;
 
     public GenericRESTResponse() {
         this.validatorExceptions=null;
+        this.date= new Date();
     }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+    
     
     
 

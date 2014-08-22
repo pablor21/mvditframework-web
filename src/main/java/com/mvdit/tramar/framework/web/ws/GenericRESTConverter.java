@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.mvdit.tramar.framework.web.ws;
 
 import com.mvdit.framework.core.MvditRuntimeException;
@@ -15,11 +14,13 @@ import org.codehaus.jackson.map.ObjectMapper;
  * @author Pablo Ramírez
  */
 public class GenericRESTConverter {
+
     /**
      * Convierte (parsea) un string al objeto deseado
+     *
      * @param jsonRepresentation
      * @param ObjClass
-     * @return 
+     * @return
      */
     public static Object fromString(String jsonRepresentation, Class<?> ObjClass) {
         ObjectMapper mapper = new ObjectMapper();
@@ -30,5 +31,15 @@ public class GenericRESTConverter {
             throw new MvditRuntimeException(e);
         }
         return wrapper;
+    }
+
+    public static String toJson(Object obj) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(obj);
+        } catch (IOException e) {
+            throw new MvditRuntimeException(e);
+        }
+       
     }
 }
