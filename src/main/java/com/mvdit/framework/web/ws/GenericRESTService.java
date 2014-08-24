@@ -191,7 +191,7 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
      GenericRESTFilter filter = (GenericRESTFilter) GenericRESTConverter.fromString(uriInfo.getQueryParameters().getFirst("filter"), GenericRESTFilter.class);
      IPageResult elements = getServiceInstance().list(filter);
      response.setResponseCode(200);
-     response.setType(RESTResultType.MULTIPLE);
+     response.setType(RESTResultType.PAGE);
      response.setResultList((GenericPageResult) elements);
      } catch (Exception ex) {
      response.setResponseCode(500);
@@ -208,8 +208,8 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
         try {
             IPageResult elements = getServiceInstance().list(this.getFilterFromString(uriInfo.getQueryParameters().getFirst("filter")));
             response.setResponseCode(200);
-            response.setType(RESTResultType.MULTIPLE);
-            response.setResultList((GenericPageResult) elements);
+            response.setType(RESTResultType.PAGE);
+            response.setResultPage((GenericPageResult) elements);
             
         } catch (Exception ex) {
             response.setResponseCode(500);
@@ -229,8 +229,8 @@ public abstract class GenericRESTService<T, K, R extends GenericRESTResponse, F 
             //RESTGenericFilterWrapper filter = RESTGenericFilterWrapper.fromString(uriInfo.getQueryParameters().getFirst("filter"));
             IPageResult elements = getServiceInstance().list(new GenericFilter(1, 0));
             response.setResponseCode(200);
-            response.setType(RESTResultType.MULTIPLE);
-            response.setResultList((GenericPageResult) elements);
+            response.setType(RESTResultType.PAGE);
+            response.setResultPage((GenericPageResult) elements);
         } catch (Exception ex) {
             response.setResponseCode(500);
             response.setMessage(ex.getLocalizedMessage());

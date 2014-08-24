@@ -11,5 +11,5 @@ package com.mvdit.framework.web.ws;
  * @author Pablo Ramírez
  */
 public enum RESTResultType {
-    MULTIPLE, SINGLE
+    PAGE, SINGLE, LIST
 }

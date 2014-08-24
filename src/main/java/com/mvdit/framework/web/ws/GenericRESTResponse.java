@@ -12,6 +12,7 @@ import com.mvdit.framework.data.GenericPageResult;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -31,7 +32,8 @@ public class GenericRESTResponse<T> implements Serializable{
     private RESTResultType type;
     private String message;
     private T singleResult;
-    private GenericPageResult resultList;
+    private GenericPageResult resultPage;
+    private List<T> resultList;
     private Set<ConstraintViolation> validatorExceptionsSet;
     private Map<String, String> validatorExceptions;
     @JsonDeserialize(using = CustomJSONDateTimeDeserializer.class)
@@ -86,12 +88,21 @@ public class GenericRESTResponse<T> implements Serializable{
         this.singleResult = singleResult;
     }
 
-    public GenericPageResult getResultList() {
+    public List<T> getResultList() {
         return resultList;
     }
 
-    public void setResultList(GenericPageResult resultList) {
+    public void setResultList(List<T> resultList) {
         this.resultList = resultList;
+    }  
+    
+
+    public GenericPageResult getResultPage() {
+        return resultPage;
+    }
+
+    public void setResultPage(GenericPageResult resultPage) {
+        this.resultPage = resultPage;
     }
 
     @JsonIgnore
